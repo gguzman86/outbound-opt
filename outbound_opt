@@ -1,0 +1,63 @@
+# Import PuLP modeller functions
+from pulp import *
+
+#Create problem
+prob = LpProblem("Ooutbound-opt", LpMinimize) #(name, LpMinimize/LpMaximize)
+
+#Create variables
+var_unit = LpVariable.dicts("unit", Key ,0, None, LpContinuous) #(name, lower bound, upper bound, LpContinuous/LpInteger)
+
+########## Objective function #########
+
+Cost1 = lpSum([var_cont[i]*Cost_1[i] for i in Key])
+Cost2= lpSum([var_cont[i]*Cost_2[i] for i in Key])
+Cost3 = lpSum([var_cont[i]*Cost_3[i] for i in Key])
+Cost4 = lpSum([var_cont[i]*Cost_4[i] for i in Key])
+
+Cost_T = Cost1 + Cost2 + Cost3 + Cost4
+prob.objective += Cost_T
+
+############ RESTRICTIONS ###########
+#It's necessary to have more than one entry per restriction
+
+#1)Restriction type
+for r in Restriction1_Key:
+    prob += lpSum(varscc[k] for k in Key if Key_R1[k] == r) >= Restriction1[r] ,"Rest1" + str(r)
+    
+########PYTHON########
+
+#Write the model in .lp
+prob.writeLP("Model.lp") 
+
+#solve the problem
+prob.solve() 
+
+#Print status
+print "Status:", LpStatus[prob.status]
+
+#Print objective function
+
+print "Cost 1 =", value(Cost1)
+print "Cost 2 =", value(Cost2)
+print "Cost 3 =", value(Cost3)
+print "Cost 4 =", value(Cost4)
+
+#print "Total Cost =", value(prob.objective)
+
+##########ExcelL##########
+
+#Add O.F. in Excel
+Cost_T= value(Cost1) + value(Cost2) + value(Cost3) + value(Cost4)
+#Cost_T= (value(prob.objective))
+
+#Add value of the unit into Excel
+for i in Key:
+    UNIT[i]=value(var_unit[i]) #.varValue
+
+SolverResult=LpStatus[prob.status]
+print "End"
+
+#Sensitivity analysis
+#print "\nSensitivity Analysis\nConstraint\t\tShadow Price\tSlack"
+#for name, c in prob.constraints.items():
+#    print name, "\t", c.pi, "\t", c.slack
