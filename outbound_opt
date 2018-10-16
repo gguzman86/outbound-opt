@@ -5,7 +5,7 @@ from pulp import *
 prob = LpProblem("Ooutbound-opt", LpMinimize) #(name, LpMinimize/LpMaximize)
 
 #Create variables
-var_unit = LpVariable.dicts("unit", Key ,0, None, LpContinuous) #(name, lower bound, upper bound, LpContinuous/LpInteger)
+var_unit = LpVariable.dicts("unit", (Key1, Key2) ,0, None, LpContinuous) #(name, lower bound, upper bound, LpContinuous/LpInteger)
 
 ########## Objective function #########
 
